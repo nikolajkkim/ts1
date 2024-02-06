@@ -13,7 +13,8 @@ num_frames = int(duration_seconds * sample_rate)
 t = np.linspace(0, duration_seconds, num_frames, endpoint=False)
 signal = 0.5 * np.sin(2 * np.pi * frequency * t)
 
-# scale the signal to fit in the range of a 16-bit PCM audio file
+# scale the signal to fit in the range of a 16-bit PCM (pulse code modulation) audio file
+# the term "16-bit" refers to the number of bits used to represent the amplitude of each sample in the audio signal
 scaled_signal = np.int16(signal * 32767)
 
 # save the signal to a WAV file
