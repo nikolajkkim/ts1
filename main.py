@@ -1,20 +1,33 @@
-# Audio Attempt
-from pydub import AudioSegment
+import audioop
+import wave
 import numpy as np
 
-# Set the desired frequency (400Hz in this case)
+# set the desired frequency 
 frequency = 400  # in Hertz
 
-# Set the duration of the audio segment (e.g., 5 seconds)
 duration_seconds = 5
-duration_milliseconds = int(duration_seconds * 1000)  # convert to milliseconds
+sample_rate = 44100
+num_frames = int(duration_seconds * sample_rate)
 
-# Generate a sine wave signal
-t = np.linspace(0, duration_seconds, int(duration_seconds * 44100), endpoint=False)
+# generate a sine wave signal
+t = np.linspace(0, duration_seconds, num_frames, endpoint=False)
 signal = 0.5 * np.sin(2 * np.pi * frequency * t)
 
-# Convert the numpy array to Pydub's AudioSegment
-audio_segment = AudioSegment(signal.tobytes(), frame_rate=44100, sample_width=signal.dtype.itemsize, channels=1)
+# scale the signal to fit in the range of a 16-bit PCM audio file
+scaled_signal = np.int16(signal * 32767)
 
-# Play the audio segment
-audio_segment.play()
+# save the signal to a WAV file
+output_path = 'output_audio.wav'
+with wave.open(output_path, 'w') as wav_file:
+    wav_file.setnchannels(1)
+    wav_file.setsampwidth(2)
+    wav_file.setframerate(sample_rate)
+    wav_file.writeframes(scaled_signal.tobytes())
+
+# play the audio using the 'afplay' command on macOS or 'start' on Windows
+import subprocess
+subprocess.run(['afplay', output_path]) 
+# subprocess.run(['start', 'output_audio.wav'], shell=True)  # For Windows... jake
+
+
+
